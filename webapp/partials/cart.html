@@ -1,0 +1,128 @@
+<div ng-controller="MyCartCtrl" ng-init="init()">
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="messages" class="alert alert-{{alertStatus}}" ng-show="messages">
+                <span ng-bind="messages"></span>
+                <i class="dismiss-messages pull-right glyphicon glyphicon-remove" ng-click="messages = ''"
+                   ng-show="messages"></i>
+            </div>
+            <img class="spinner" src="/img/ajax-loader.gif" ng-show="loading"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>My Cart</h3>
+        </div>
+    </div>
+
+     <div class="row row-offcanvas row-offcanvas-right">
+        <div class="col-xs-12 col-sm-8">
+
+
+            <div ng-show="submitted && !loading && books.length == 0">
+                <h4>You have no books in your cart.</h4>
+            </div>
+            <div class="table-responsive">
+            
+                <table id="conference-table" class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Author</th>
+                        <th>Price (฿)</th>
+                        <th>Details</th>
+                        <th>X</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="book in books | startFrom: pagination.currentPage * pagination.pageSize | limitTo: pagination.pageSize">
+                        <td>{{book.name}}</td>
+                        <td>{{book.author}}</td>
+                        <td>{{book.price}}</td>
+                        <td><a href="#/book/detail/{{book.websafeKey}}">Details</a></td>
+                        <td><a ng-click="removeBookFromCart(book.websafeKey);">Remove</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <ul class="pagination" ng-show="books.length > 0">
+                <li ng-class="{disabled: pagination.currentPage == 0 }">
+                    <a ng-class="{disabled: pagination.currentPage == 0 }"
+                       ng-click="pagination.isDisabled($event) || (pagination.currentPage = 0)">&lt&lt</a>
+                </li>
+                <li ng-class="{disabled: pagination.currentPage == 0 }">
+                    <a ng-class="{disabled: pagination.currentPage == 0 }"
+                       ng-click="pagination.isDisabled($event) || (pagination.currentPage = pagination.currentPage - 1)">&lt</a>
+                </li>
+
+                <li ng-repeat="page in pagination.pageArray()" ng-class="{active: $parent.pagination.currentPage == page}">
+                    <a ng-click="$parent.pagination.currentPage = page">{{page + 1}}</a>
+                </li>
+
+                <li ng-class="{disabled: pagination.currentPage == pagination.numberOfPages() - 1}">
+                    <a ng-class="{disabled: pagination.currentPage == pagination.numberOfPages() - 1}"
+                       ng-click="pagination.isDisabled($event) || (pagination.currentPage = pagination.currentPage + 1)">&gt</a>
+                </li>
+                <li ng-class="{disabled: pagination.currentPage == pagination.numberOfPages() - 1}">
+                    <a ng-class="{disabled: pagination.currentPage == pagination.numberOfPages() - 1}"
+                       ng-click="pagination.isDisabled($event) || (pagination.currentPage = pagination.numberOfPages() - 1)">&gt&gt</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-xs-6 col-sm-4 sidebar-offcanvas" id="sidebar" role="navigation" ng-show="books.length > 0">
+        	<div class="well well-sm">
+        	<div>
+        	    <h4>Total: {{cart.total}} ฿ <h4>
+        	</div>
+        	<br>
+        	<h3>Ready to Checkout?</h3>
+        	<form name="checkoutForm" novalidate role="form">
+                <div class="form-group">
+                    <label for="address">Address</label><span class="required">*</span>
+                     <span class="label label-danger"
+                        ng-show="checkoutForm.address.$error.required">Required!</span>
+                    <textarea id="address" type="text" name="address" ng-model="cart.address" class="form-control"></textarea>
+                </div>
+                <h4>Credit card info</h4>
+                <div class="form-group">
+                    <label for="cardName">Name <span class="required">*</span></label>
+                    <span class="label label-danger"
+                        ng-show="checkoutForm.cardName.$error.required">Required!</span>
+                    <input id="cardName" type="text" name="cardName" ng-model="cart.cardName" class="form-control"
+                           ng-required="true"/>
+                </div>
+                <div class="form-group">
+                    <label for="cardNumber">Card Number <span class="required">*</span></label>
+                    <span class="label label-danger"
+                        ng-show="checkoutForm.cardNumber.$error.required">Required!</span>
+                    <input id="cardNumber" type="text" name="cardNumber" ng-model="cart.cardNumber" class="form-control"
+                           ng-required="true"/>
+                </div>
+                <div class="form-group">
+                    <label for="cardExpiryDate">Expiry Date <span class="required">*</span></label>
+                    <span class="label label-danger"
+                        ng-show="checkoutForm.cardExpiryDate.$error.required">Required!</span>
+                    <input id="cardExpiryDate" type="text" name="cardExpiryDate" ng-model="cart.cardExpiryDate" class="form-control"
+                           ng-required="true"/>
+                </div>
+                <div class="form-group">
+                    <label for="cardCcv">CCV <span class="required">*</span></label>
+                    <span class="label label-danger"
+                        ng-show="checkoutForm.cardCcv.$error.required">Required!</span>
+                    <input id="cardCcv" type="text" name="cardCcv" ng-model="cart.cardCcv" class="form-control"
+                           ng-required="true"/>
+                </div>
+                <button ng-click="checkout(checkoutForm)" class="btn btn-primary"
+                        ng-disabled="!isValidChckout(checkoutForm) || loading">Check out
+                </button>
+
+
+
+        	</div>
+        </div>
+
+    </div> 
+</div>
